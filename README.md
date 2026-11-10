@@ -70,7 +70,7 @@ Tempos ajustáveis no objeto `TIMELINE` do componente (sequência atual ≈ 7 s)
 ## Texto no scroll (bloom + grão)
 `src/lib/materialize.ts`: TODO o texto do site (títulos palavra por palavra, parágrafos, listas,
 rótulos, cards, rodapé) surge feito de grão que cintila, com bloom roxo e desfoque, e fica sólido
-devagar (~2,6 s por elemento, em ordem de leitura). Animado quadro a quadro em JS, funciona em
+devagar (~1,2 s por elemento, em ordem de leitura). Animado quadro a quadro em JS, funciona em
 qualquer navegador. Ajuste DURATION, WORD_STAGGER, ITEM_STAGGER e GRAIN_FPS no topo do arquivo.
 Para tirar um elemento do efeito, adicione `data-no-mat`.
 

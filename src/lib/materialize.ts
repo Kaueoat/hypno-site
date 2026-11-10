@@ -11,9 +11,9 @@
  * mas sem deslocamento.
  */
 
-const DURATION = 2600 // ms por elemento
-const WORD_STAGGER = 110 // ms entre palavras de um título
-const ITEM_STAGGER = 90 // ms entre elementos que entram juntos
+const DURATION = 1200 // ms por elemento
+const WORD_STAGGER = 55 // ms entre palavras de um título
+const ITEM_STAGGER = 45 // ms entre elementos que entram juntos
 const GRAIN_FPS = 14 // "cintilação" do grão
 
 /** Textos que entram no efeito. */
@@ -208,7 +208,7 @@ export function materializeHero(delay = 350) {
   const els = Array.from(document.querySelectorAll<HTMLElement>('[data-mat-hero]')).sort(
     (a, b) => Number(a.dataset.matHero) - Number(b.dataset.matHero),
   )
-  const units: Unit[] = els.map((el, i) => ({ el, delay: delay + i * 380, strong: el.tagName === 'H1' }))
+  const units: Unit[] = els.map((el, i) => ({ el, delay: delay + i * 200, strong: el.tagName === 'H1' }))
   animate(units)
 }
 
