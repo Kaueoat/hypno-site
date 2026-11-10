@@ -1,0 +1,302 @@
+@import "tailwindcss";
+
+/* HYPNO — tokens oficiais do brandkit */
+@theme {
+  --color-bg: #0b0b0f;
+  --color-raised: #17171d;
+  --color-ink: #fafafa;
+  --color-muted: #a1a1ad;
+  --color-line: #2a2a33;
+  --color-neon: #c45cff;
+  --color-violet: #b026ff;
+  --color-soft: #2a1440;
+
+  --font-display: "Space Grotesk", "Inter", system-ui, sans-serif;
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root {
+  color-scheme: dark;
+  --glow-sm: 0 0 12px rgba(196, 92, 255, 0.55);
+  --glow-md: 0 0 32px rgba(196, 92, 255, 0.6);
+  --glow-lg: 0 0 80px rgba(196, 92, 255, 0.7);
+  --noise-opacity: 0.18;
+  --gutter: max(20px, env(safe-area-inset-left, 0px));
+  --gutter-r: max(20px, env(safe-area-inset-right, 0px));
+}
+
+html {
+  background: var(--color-bg);
+  cursor: default;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+::selection {
+  background: var(--color-neon);
+  color: var(--color-bg);
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  text-wrap: balance;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-neon);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+@layer components {
+.wrap {
+  width: 100%;
+  max-width: 1320px;
+  margin-inline: auto;
+  padding-left: var(--gutter);
+  padding-right: var(--gutter-r);
+}
+@media (max-width: 767px) {
+  :root { --noise-opacity: 0.13; }
+}
+@media (min-width: 768px) {
+  :root {
+    --gutter: max(40px, env(safe-area-inset-left, 0px));
+    --gutter-r: max(40px, env(safe-area-inset-right, 0px));
+  }
+}
+
+.eyebrow {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+}
+
+/* ---------- Film grain (somente superfícies de marca) ---------- */
+.grain {
+  pointer-events: none;
+  position: absolute;
+  inset: -50%;
+  opacity: var(--noise-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.05' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 2.6 -1.25'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain 1.2s steps(6) infinite;
+}
+@keyframes grain {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(-4%, 3%); }
+  40% { transform: translate(3%, -2%); }
+  60% { transform: translate(-2%, -4%); }
+  80% { transform: translate(4%, 2%); }
+  100% { transform: translate(0, 0); }
+}
+
+@layer components {
+/* ---------- Liquid glass: alternativa ao backdrop-filter com url() ---------- */
+.liquid-backdrop {
+  -webkit-backdrop-filter: blur(8px) saturate(140%);
+  backdrop-filter: blur(8px) saturate(140%);
+}
+
+/* ---------- Links com sublinhado animado ---------- */
+.link-line {
+  position: relative;
+  padding-block: 4px;
+}
+.link-line::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.5s var(--ease-out-expo);
+}
+.link-line:hover::after,
+.link-line[aria-current="true"]::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+}
+
+/* ---------- Reveal (scroll) ---------- */
+[data-reveal] {
+  transition:
+    opacity 0.9s var(--ease-out-expo),
+    transform 0.9s var(--ease-out-expo),
+    filter 0.9s var(--ease-out-expo),
+    clip-path 1.2s var(--ease-out-expo);
+  transition-delay: var(--d, 0ms);
+}
+[data-reveal="up"][data-pending] { opacity: 0; transform: translateY(28px); }
+[data-reveal="blur"][data-pending] { opacity: 0; transform: translateX(-36px); filter: blur(10px); }
+[data-reveal="mask"] > * {
+  transition: clip-path 1.3s var(--ease-out-expo), transform 1.3s var(--ease-out-expo);
+  transition-delay: var(--d, 0ms);
+}
+[data-reveal="mask"][data-pending] > * { clip-path: inset(0 0 100% 0); transform: translateY(24px); }
+[data-reveal="fade"][data-pending] { opacity: 0; }
+
+/* Estado escondido aplica na hora (sem transição); só a revelação anima. */
+[data-reveal][data-pending],
+[data-reveal="mask"][data-pending] > *,
+[data-pending] .split-word {
+  transition: none !important;
+}
+
+/* ---------- Texto: materializa com bloom + grão (ver src/lib/materialize.ts) ---------- */
+.split-word {
+  display: inline-block;
+  /* folga para o bloom e o grão não serem cortados na borda da palavra */
+  padding: 0.25em 0.35em;
+  margin: -0.25em -0.35em;
+}
+/* escondido até a animação começar (definido pelo script, nunca no HTML inicial) */
+[data-mat="pending"] { opacity: 0; }
+
+/* ---------- Hero: olho ---------- */
+.eye-band {
+  animation: band-in 1.3s var(--ease-out-expo) both;
+  animation-delay: var(--d, 0ms);
+}
+@keyframes band-in {
+  from { opacity: 0; transform: translateX(60px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.eye-pupil {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pupil-in 0.9s var(--ease-out-expo) 0.75s both;
+}
+@keyframes pupil-in {
+  from { transform: scale(0); }
+  to { transform: scale(1); }
+}
+.eye-glow {
+  animation: glow-in 2.4s ease 0.6s both;
+}
+@keyframes glow-in {
+  from { opacity: 0; }
+}
+
+.hero-in {
+  animation: hero-in 2.4s var(--ease-out-expo) both;
+  animation-delay: var(--d, 0ms);
+}
+@keyframes hero-in {
+  from { opacity: 0; transform: translateY(18px); filter: blur(16px); }
+  to { opacity: 1; transform: none; filter: blur(0); }
+}
+
+/* ---------- Abertura: o site acorda ---------- */
+.intro-overlay {
+  background-color: var(--color-bg);
+  transition: background-color var(--reveal, 1000ms) cubic-bezier(0.4, 0, 0.2, 1);
+}
+html[data-intro="reveal"] .intro-overlay {
+  background-color: rgba(11, 11, 15, 0);
+  pointer-events: none;
+}
+html[data-intro="intro"] { overflow: hidden; }
+html[data-intro="intro"] #site {
+  opacity: 0;
+  filter: blur(26px);
+}
+html[data-intro="reveal"] #site {
+  opacity: 1;
+  filter: blur(0);
+  transition:
+    opacity 1.3s ease 0.15s,
+    filter 2s cubic-bezier(0.25, 0.6, 0.2, 1) 0.15s;
+}
+@media (max-width: 767px) {
+  html[data-intro="intro"] #site { filter: blur(14px); }
+}
+/* textos da Hero entram em sequência só quando a visão "ajusta" */
+html[data-intro="intro"] .hero-in { animation-play-state: paused; }
+/* o olho da Hero assume quando o olho da abertura chega até ele */
+html[data-intro] .hero-eye { opacity: 0; }
+
+/* Rastros de luz do hero (cinza, não neon) */
+.streak {
+  position: absolute;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(250, 250, 250, 0.5), transparent);
+  filter: blur(0.6px);
+  animation: streak var(--t, 9s) linear infinite;
+  animation-delay: var(--d, 0s);
+  opacity: 0;
+}
+@keyframes streak {
+  0% { transform: translateX(110vw) scaleX(0.4); opacity: 0; }
+  10% { opacity: var(--o, 0.35); }
+  60% { opacity: var(--o, 0.35); }
+  100% { transform: translateX(-60vw) scaleX(1.4); opacity: 0; }
+}
+
+/* Faixa com nomes de serviços (marquee) */
+.marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 38s linear infinite;
+}
+@keyframes marquee {
+  to { transform: translateX(-50%); }
+}
+
+/* Linhas de serviço do audiovisual */
+.av-row .av-title {
+  transition: transform 0.6s var(--ease-out-expo), text-shadow 0.6s var(--ease-out-expo), color 0.4s;
+}
+.av-row:hover .av-title {
+  transform: translateX(14px);
+  text-shadow: -10px 0 8px rgba(250, 250, 250, 0.18), -22px 0 14px rgba(250, 250, 250, 0.08);
+}
+
+.kenburns {
+  animation: kenburns 22s ease-in-out infinite alternate;
+  transform-origin: 30% 50%;
+}
+@keyframes kenburns {
+  from { transform: scale(1.04) translateX(0); }
+  to { transform: scale(1.12) translateX(-3%); }
+}
+.media-frame img,
+.media-frame video {
+  transition: transform 1.2s var(--ease-out-expo);
+}
+.media-frame:hover img,
+.media-frame:hover video { transform: scale(1.04); }
+
+/*
+ * Movimento reduzido (ex.: Windows com "Efeitos de animação" desligado):
+ * a identidade continua (abertura, desfoque, grão, bloom), mas sem deslocamentos
+ * grandes nem movimentos em loop.
+ */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .grain, .streak, .marquee, .kenburns { animation: none !important; }
+  .streak { display: none; }
+  .eye-band { animation-name: glow-in !important; }
+  [data-reveal="up"][data-pending],
+  [data-reveal="blur"][data-pending] { transform: none; }
+}
