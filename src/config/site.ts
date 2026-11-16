@@ -81,16 +81,32 @@ export const sites = {
    */
   projects: [
     {
-      title: 'HYPNO',
-      client: 'Site institucional',
+      title: 'Lume',
+      client: 'Pizzaria de bancada · cardápio e pedido online',
       year: '2026',
-      href: '', // TODO: colocar o link publicado (ex.: https://hypno.vercel.app)
-      domain: 'hypno.com.br',
-      video: 'portfolio/sites/hypno.mp4',
-      poster: 'portfolio/sites/hypno.jpg',
+      href: 'https://cozy-mousse-49c96a.netlify.app/',
+      domain: 'cozy-mousse-49c96a.netlify.app',
+      video: 'portfolio/sites/lume.mp4',
+      poster: 'portfolio/sites/lume.jpg',
     },
-    { title: 'Próximo projeto', client: 'Em produção', year: '', href: '', domain: 'seunegocio.com.br', soon: true },
-    { title: 'Próximo projeto', client: 'Em produção', year: '', href: '', domain: 'suamarca.com', soon: true },
+    {
+      title: 'VK Cars',
+      client: 'Seminovos premium · site institucional',
+      year: '2026',
+      href: 'https://silver-melba-863dfc.netlify.app/',
+      domain: 'silver-melba-863dfc.netlify.app',
+      video: 'portfolio/sites/vk-cars.mp4',
+      poster: 'portfolio/sites/vk-cars.jpg',
+    },
+    {
+      title: 'VK Cars',
+      client: 'Seminovos premium · com área do cliente',
+      year: '2026',
+      href: 'https://bucolic-donut-97af5d.netlify.app/',
+      domain: 'bucolic-donut-97af5d.netlify.app',
+      video: 'portfolio/sites/vk-cars-2.mp4',
+      poster: 'portfolio/sites/vk-cars-2.jpg',
+    },
   ] as SiteProject[],
 }
 
