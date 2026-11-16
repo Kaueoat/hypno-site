@@ -7,7 +7,7 @@ import { Reveal, SplitHeading } from '../ui/Reveal'
 type Status = { kind: 'idle' } | { kind: 'sending' } | { kind: 'sent'; link: string } | { kind: 'error'; link: string }
 
 const field =
-  'w-full rounded-[4px] border border-line bg-raised px-4 py-3.5 text-[16px] text-ink placeholder:text-muted/70 transition-colors duration-300 hover:border-[#3a3a45] focus:border-neon focus:outline-none'
+  'w-full rounded-[4px] border border-line bg-raised px-4 py-3.5 text-[16px] text-ink placeholder:text-muted/70 transition-colors duration-300 hover:border-[#3a3a45] focus:border-chrome focus:outline-none'
 
 export function ContactSection() {
   const [status, setStatus] = useState<Status>({ kind: 'idle' })
@@ -71,7 +71,7 @@ export function ContactSection() {
             <p className="mt-8 max-w-[38ch] text-[19px] leading-relaxed text-muted">{cta.text}</p>
           </Reveal>
           <Reveal delay={250}>
-            <LiquidButton href={whatsappLink()} target="_blank" rel="noopener" variant="neon" size="xxl" className="mt-10">
+            <LiquidButton href={whatsappLink()} target="_blank" rel="noopener" variant="chrome" size="xxl" className="mt-10">
               <MessageCircle size={20} aria-hidden="true" />
               {cta.button}
               <ArrowUpRight size={18} aria-hidden="true" />
@@ -146,7 +146,7 @@ export function ContactSection() {
               <div id="form-status" role="status" aria-live="polite" className="min-h-[24px] text-[15px]">
                 {status.kind === 'sent' && (
                   <p className="flex flex-wrap items-center gap-2 text-ink">
-                    <Check size={18} className="text-neon" aria-hidden="true" />
+                    <Check size={18} className="text-ink" aria-hidden="true" />
                     {contact.formEndpoint ? 'Recebemos sua mensagem. Respondemos em breve.' : 'Sua mensagem está pronta no WhatsApp.'}
                     {!contact.formEndpoint && (
                       <a href={status.link} target="_blank" rel="noopener" className="link-line text-muted hover:text-ink">

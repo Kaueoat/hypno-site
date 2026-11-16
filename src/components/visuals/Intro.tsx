@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
-import { EyeArt, IRIS, LID_ALMOST, MAX_Y, PUPIL, VIEWBOX, lidPath } from './HypnoEye'
+import { LID_ALMOST, MAX_Y, SilverSymbol } from './HypnoEye'
+import { ChromeEye, type ChromeEyeHandle } from './chrome/ChromeEye'
 
 /**
  * Abertura da HYPNO — "o site acorda".
@@ -7,8 +8,8 @@ import { EyeArt, IRIS, LID_ALMOST, MAX_Y, PUPIL, VIEWBOX, lidPath } from './Hypn
  * TELA PRETA → OLHO FECHADO → QUASE FECHADO → (pisca) → ABERTO → o olho viaja do centro
  * da tela até o lugar dele na Hero → SITE DESFOCADO → SITE NÍTIDO → HERO COMPLETA.
  *
- * Os estados fechado / quase fechado são as mesmas versões vetoriais do símbolo
- * (pálpebra = máscara SVG sobre a arte original; ver `lidPath` em HypnoEye.tsx).
+ * O olho é o mesmo cromo em tempo real da Hero (ChromeEye); as pálpebras são
+ * máscaras sobre a arte original (ver `lidPath` em HypnoEye.tsx).
  *
  * Fases: o App controla `data-intro` no <html> ("intro" → "reveal" → removido).
  * Qualquer tecla, toque, clique ou rolagem acelera a abertura — nunca bloqueia o site.
@@ -44,11 +45,7 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 export function Intro({ onReveal, onDone }: Props) {
   const overlay = useRef<HTMLDivElement>(null)
   const box = useRef<HTMLDivElement>(null)
-  const lid = useRef<SVGPathElement>(null)
-  const hole = useRef<SVGCircleElement>(null)
-  const pupil = useRef<SVGCircleElement>(null)
-  const glow = useRef<SVGSVGElement>(null)
-  const glowLid = useRef<SVGPathElement>(null)
+  const eye = useRef<ChromeEyeHandle | null>(null)
 
   useEffect(() => {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -71,14 +68,11 @@ export function Intro({ onReveal, onDone }: Props) {
 
     const setLid = (v: number) => {
       k = v
-      const d = lidPath(Math.max(0, Math.min(1, v)))
-      lid.current?.setAttribute('d', d)
-      glowLid.current?.setAttribute('d', d)
-      // a íris acorda olhando para baixo e sobe ao centro conforme o olho abre
-      const oy = MAX_Y * 0.75 * (1 - Math.min(1, Math.max(0, v)))
-      hole.current?.setAttribute('cy', String(IRIS.cy + oy))
-      pupil.current?.setAttribute('cy', String(PUPIL.cy + oy))
-      if (glow.current) glow.current.style.opacity = String(0.08 + 0.42 * v * v)
+      const c = Math.min(1, Math.max(0, v))
+      // a íris acorda olhando para baixo e sobe ao centro conforme o olho abre;
+      // o reflexo do cromo "desliza" enquanto o olho desperta
+      const oy = MAX_Y * 0.75 * (1 - c)
+      eye.current?.set({ lid: c, iris: [0, oy], tilt: [-0.6 * (1 - c), 0.5 * (1 - c)] })
     }
 
     const tween = (ms: number, step: (t: number) => void) =>
@@ -170,24 +164,7 @@ export function Intro({ onReveal, onDone }: Props) {
   return (
     <div ref={overlay} aria-hidden="true" className="intro-overlay fixed inset-0 z-[200] flex items-center justify-center">
       <div ref={box} className="relative opacity-0 will-change-transform" style={{ aspectRatio: '248 / 152' }}>
-        <svg
-          ref={glow}
-          viewBox={VIEWBOX}
-          className="absolute inset-0 h-full w-full"
-          style={{ fill: 'var(--color-neon)', filter: 'blur(clamp(14px, 3.2vw, 40px))', opacity: 0 }}
-        >
-          <defs>
-            <clipPath id="intro-glow-lid">
-              <path ref={glowLid} d={lidPath(0)} />
-            </clipPath>
-          </defs>
-          <g clipPath="url(#intro-glow-lid)">
-            <EyeArt uid="introg" />
-          </g>
-        </svg>
-        <svg viewBox={VIEWBOX} className="relative h-full w-full" style={{ fill: 'var(--color-neon)' }}>
-          <EyeArt uid="intro" holeRef={hole} pupilRef={pupil} lidRef={lid} />
-        </svg>
+        <ChromeEye handle={eye} fallback={<SilverSymbol className="h-full w-full" />} />
       </div>
     </div>
   )

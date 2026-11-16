@@ -9,14 +9,14 @@ import { cn } from '../../lib/utils'
  *
  * - `href` → renderiza <a>; sem `href` → <button>.
  * - Formato pill (padrão da marca).
- * - `variant="neon"`: texto e reflexo roxos para a ação principal.
+ * - `variant="chrome"`: texto em cromo e reflexos mais fortes para a ação principal.
  */
 
-type Variant = 'default' | 'neon'
+type Variant = 'default' | 'chrome'
 type Size = 'sm' | 'lg' | 'xl' | 'xxl' | 'icon'
 
 const base =
-  'group/liquid relative isolate inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-full font-semibold tracking-[-0.005em] outline-none transition-transform duration-300 hover:scale-105 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-neon focus-visible:ring-offset-2 focus-visible:ring-offset-bg [&_svg]:pointer-events-none [&_svg]:shrink-0'
+  'group/liquid relative isolate inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-full font-semibold tracking-[-0.005em] outline-none transition-transform duration-300 hover:scale-105 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-chrome focus-visible:ring-offset-2 focus-visible:ring-offset-bg [&_svg]:pointer-events-none [&_svg]:shrink-0'
 
 const sizes: Record<Size, string> = {
   sm: 'h-10 px-5 text-[14px]',
@@ -28,15 +28,15 @@ const sizes: Record<Size, string> = {
 
 const variants: Record<Variant, string> = {
   default: 'text-ink',
-  neon: 'text-neon',
+  chrome: 'text-white',
 }
 
 /** Sombras da versão escura do componente original (reflexos brancos internos). */
 const GLASS_SHADOW =
   '0 0 8px rgba(0,0,0,0.03), 0 2px 6px rgba(0,0,0,0.08), inset 3px 3px 0.5px -3.5px rgba(255,255,255,0.09), inset -3px -3px 0.5px -3.5px rgba(255,255,255,0.85), inset 1px 1px 1px -0.5px rgba(255,255,255,0.6), inset -1px -1px 1px -0.5px rgba(255,255,255,0.6), inset 0 0 6px 6px rgba(255,255,255,0.12), inset 0 0 2px 2px rgba(255,255,255,0.06), 0 0 12px rgba(0,0,0,0.15)'
 
-const NEON_SHADOW =
-  '0 0 8px rgba(0,0,0,0.03), 0 2px 6px rgba(0,0,0,0.08), inset 3px 3px 0.5px -3.5px rgba(255,255,255,0.09), inset -3px -3px 0.5px -3.5px rgba(232,200,255,0.85), inset 1px 1px 1px -0.5px rgba(232,200,255,0.6), inset -1px -1px 1px -0.5px rgba(232,200,255,0.6), inset 0 0 6px 6px rgba(196,92,255,0.16), inset 0 0 2px 2px rgba(196,92,255,0.1), 0 0 14px rgba(196,92,255,0.18)'
+const CHROME_SHADOW =
+  '0 0 8px rgba(0,0,0,0.03), 0 2px 6px rgba(0,0,0,0.08), inset 3px 3px 0.5px -3.5px rgba(255,255,255,0.2), inset -3px -3px 0.5px -3.5px rgba(255,255,255,1), inset 1px 1px 1px -0.5px rgba(255,255,255,0.85), inset -1px -1px 1px -0.5px rgba(255,255,255,0.85), inset 0 0 6px 6px rgba(255,255,255,0.16), inset 0 0 2px 2px rgba(255,255,255,0.1), 0 0 16px rgba(255,255,255,0.08)'
 
 type Common = { variant?: Variant; size?: Size; className?: string; children: ReactNode }
 type AsLink = Common & { href: string } & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'className' | 'children'>
@@ -54,7 +54,7 @@ export function LiquidLayers({ variant = 'default', radius = 'rounded-full' }: {
       <span
         aria-hidden="true"
         className={`pointer-events-none absolute inset-0 z-0 ${radius} transition-all duration-300`}
-        style={{ boxShadow: variant === 'neon' ? NEON_SHADOW : GLASS_SHADOW }}
+        style={{ boxShadow: variant === 'chrome' ? CHROME_SHADOW : GLASS_SHADOW }}
       />
       <span
         aria-hidden="true"

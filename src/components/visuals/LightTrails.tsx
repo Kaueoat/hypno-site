@@ -19,7 +19,7 @@ function rng(seed: number) {
   }
 }
 
-const NEON = [196, 92, 255]
+const NEON = [214, 218, 228] // prata (antes roxo)
 const WHITE = [250, 250, 250]
 const GREY = [161, 161, 173]
 

@@ -34,7 +34,7 @@ export function Hero({ entrance = true }: { entrance?: boolean }) {
                 {hero.primary}
                 <ArrowDown size={18} aria-hidden="true" />
               </LiquidButton>
-              <LiquidButton href={whatsappLink()} target="_blank" rel="noopener" variant="neon">
+              <LiquidButton href={whatsappLink()} target="_blank" rel="noopener" variant="chrome">
                 {hero.secondary}
                 <ArrowUpRight size={18} aria-hidden="true" />
               </LiquidButton>

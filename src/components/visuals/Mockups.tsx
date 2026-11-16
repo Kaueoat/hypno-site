@@ -38,7 +38,7 @@ export function BrowserMockup({ className = '' }: { className?: string }) {
             <div className="mt-4 h-2 w-4/5 rounded-full bg-muted/30" />
             <div className="mt-2 h-2 w-3/5 rounded-full bg-muted/30" />
             <div className="mt-6 flex gap-3">
-              <span className="inline-flex h-8 items-center rounded-full bg-neon px-4 text-[11px] font-semibold text-bg shadow-[0_0_24px_rgba(196,92,255,0.55)]">
+              <span className="inline-flex h-8 items-center rounded-full chrome-bg px-4 text-[11px] font-semibold text-bg shadow-[0_0_18px_rgba(255,255,255,0.25)]">
                 Quero agora
               </span>
               <span className="inline-flex h-8 items-center rounded-full border border-line px-4 text-[11px] text-muted">

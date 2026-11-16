@@ -1,20 +1,18 @@
 /**
- * Texto que "materializa" — assinatura da HYPNO (neon + grão do brandkit).
+ * Texto que "materializa" — assinatura da HYPNO.
  *
  * Todo texto do site (títulos, parágrafos, rótulos, listas, cards) entra assim ao
- * aparecer na tela: começa invisível, surge feito de GRÃO (máscara de ruído que pisca
- * como película), com BLOOM roxo e desfoque, e vai ficando sólido e nítido devagar.
+ * aparecer na tela: começa invisível e DESFOCADO e vai ficando nítido (desfoque → nítido),
+ * com uma subida curtinha. Sem brilho colorido e sem grão.
  *
- * É animado quadro a quadro em JavaScript (não depende de recursos de CSS que nem
- * todo navegador anima). Cada elemento anima uma vez; no fim, todos os estilos
- * temporários são removidos. Com prefers-reduced-motion, mantém grão/bloom/desfoque
- * mas sem deslocamento.
+ * Animado quadro a quadro em JavaScript. Cada elemento anima uma vez; no fim, todos
+ * os estilos temporários são removidos. Com prefers-reduced-motion, mantém o
+ * desfoque mas sem deslocamento.
  */
 
-const DURATION = 1200 // ms por elemento
+const DURATION = 1100 // ms por elemento
 const WORD_STAGGER = 55 // ms entre palavras de um título
 const ITEM_STAGGER = 45 // ms entre elementos que entram juntos
-const GRAIN_FPS = 14 // "cintilação" do grão
 
 /** Textos que entram no efeito. */
 const SELECTOR = [
@@ -34,84 +32,38 @@ const SELECTOR = [
 /** Áreas que não entram (botões, mockups decorativos, faixa em movimento, frases com efeito próprio). */
 const EXCLUDE = '[data-slot="button"], [role="img"], .marquee, [aria-hidden="true"], [data-no-mat], #hero-title, form [role="status"]'
 
-const NOISE = (() => {
-  const svg =
-    "<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'>" +
-    "<filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.62' numOctaves='2' stitchTiles='stitch'/>" +
-    "<feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 3.4 -1.3'/></filter>" +
-    "<rect width='100%' height='100%' filter='url(#n)'/></svg>"
-  return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`
-})()
-
 const REDUCED = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v))
 const easeOut = (t: number) => 1 - Math.pow(1 - t, 3)
-const easeIn = (t: number) => t * t * t
-const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2)
 
 type Unit = { el: HTMLElement; delay: number; strong: boolean }
 
-function setMask(el: HTMLElement, solid: number, pos: string) {
-  const m = `linear-gradient(rgba(0,0,0,${solid.toFixed(3)}),rgba(0,0,0,${solid.toFixed(3)})), ${NOISE}`
-  const s = el.style as CSSStyleDeclaration & Record<string, string>
-  s.webkitMaskImage = m
-  s.maskImage = m
-  s.webkitMaskSize = '100% 100%, 220px 220px'
-  s.maskSize = '100% 100%, 220px 220px'
-  s.webkitMaskPosition = `0 0, ${pos}`
-  s.maskPosition = `0 0, ${pos}`
-  s.webkitMaskRepeat = 'repeat'
-  s.maskRepeat = 'repeat'
-  s.setProperty('-webkit-mask-composite', 'source-over')
-  s.setProperty('mask-composite', 'add')
-  s.setProperty('-webkit-mask-clip', 'no-clip')
-  s.setProperty('mask-clip', 'no-clip')
-}
-
 function clearStyles(el: HTMLElement) {
   for (const p of [
-    'opacity', 'filter', 'text-shadow', 'transform',
-    '-webkit-mask-image', 'mask-image', '-webkit-mask-size', 'mask-size',
-    '-webkit-mask-position', 'mask-position', '-webkit-mask-repeat', 'mask-repeat',
-    '-webkit-mask-composite', 'mask-composite', '-webkit-mask-clip', 'mask-clip', 'will-change',
+    'opacity', 'filter', 'transform', 'will-change',
   ])
     el.style.removeProperty(p)
   el.removeAttribute('data-mat')
 }
 
-function frame(u: Unit, t: number, grainPos: string) {
+function frame(u: Unit, t: number) {
   const { el, strong } = u
-  // opacidade sobe cedo; o grão e o bloom seguram a forma "em construção"
-  const op = easeOut(clamp01(t / 0.35))
-  const blur = (strong ? 7 : 5) * (1 - easeOut(clamp01(t / 0.6)))
-  const solid = easeIn(clamp01((t - 0.15) / 0.8)) // grão domina até ~60%
-  const bloomIn = easeOut(clamp01((t - 0.05) / 0.3))
-  const bloom = bloomIn * (1 - easeInOut(clamp01((t - 0.35) / 0.65)))
-  const y = REDUCED ? 0 : (strong ? 0.18 : 0.1) * (1 - easeOut(clamp01(t / 0.8)))
+  const op = easeOut(clamp01(t / 0.5))
+  const blur = (strong ? 14 : 9) * (1 - easeOut(clamp01(t / 0.85)))
+  const y = REDUCED ? 0 : (strong ? 0.16 : 0.1) * (1 - easeOut(clamp01(t / 0.85)))
   el.style.opacity = op.toFixed(3)
   el.style.filter = blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : 'none'
   el.style.transform = `translateY(${y.toFixed(3)}em)`
-  el.style.textShadow =
-    bloom > 0.01
-      ? `0 0 6px rgba(232,200,255,${(0.85 * bloom).toFixed(3)}), 0 0 18px rgba(196,92,255,${(0.9 * bloom).toFixed(3)}), 0 0 38px rgba(196,92,255,${(0.45 * bloom).toFixed(3)})`
-      : 'none'
-  setMask(el, solid, grainPos)
 }
 
 function animate(units: Unit[]) {
   const start = performance.now()
-  let lastGrain = 0
-  let grainPos = '0 0'
   units.forEach((u) => {
     u.el.style.willChange = 'opacity, filter, transform'
-    frame(u, 0, grainPos)
+    frame(u, 0)
     u.el.removeAttribute('data-mat')
   })
   const tick = (now: number) => {
-    if (now - lastGrain > 1000 / GRAIN_FPS) {
-      lastGrain = now
-      grainPos = `${Math.round(Math.random() * 220)}px ${Math.round(Math.random() * 220)}px`
-    }
     let running = false
     for (const u of units) {
       const t = (now - start - u.delay) / DURATION
@@ -123,7 +75,7 @@ function animate(units: Unit[]) {
         continue
       }
       running = true
-      frame(u, Math.max(0, t), grainPos)
+      frame(u, Math.max(0, t))
     }
     if (running) requestAnimationFrame(tick)
   }

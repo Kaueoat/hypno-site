@@ -25,7 +25,7 @@ export function ProcessSection() {
         <ol ref={track} className="relative mt-16 md:mt-24 md:ml-[33.333%]">
           {/* Linha de progresso */}
           <div aria-hidden="true" className="absolute bottom-6 left-[11px] top-6 w-px bg-line md:left-[15px]">
-            <div ref={fill} className="h-full w-full origin-top bg-neon" style={{ transform: 'scaleY(0)' }} />
+            <div ref={fill} className="h-full w-full origin-top chrome-bg" style={{ transform: 'scaleY(0)' }} />
           </div>
 
           {process.steps.map((s, i) => {
@@ -36,7 +36,7 @@ export function ProcessSection() {
                 <span aria-hidden="true" className="relative mt-[10px] flex justify-center md:mt-[14px]">
                   <span
                     className={`h-[11px] w-[11px] rounded-full border transition-all duration-500 md:h-[13px] md:w-[13px] ${
-                      on ? 'border-neon bg-neon' : 'border-muted/50 bg-bg'
+                      on ? 'border-chrome chrome-bg' : 'border-muted/50 bg-bg'
                     }`}
                     style={current ? { boxShadow: 'var(--glow-sm)' } : undefined}
                   />
@@ -44,7 +44,7 @@ export function ProcessSection() {
                 <Reveal variant="text" delay={120}>
                   <div className="grid gap-3 md:grid-cols-[120px_1fr] md:gap-8">
                     <span
-                      className={`font-mono text-[14px] tabular-nums transition-colors duration-500 md:pt-3 ${on ? 'text-neon' : 'text-muted'}`}
+                      className={`font-mono text-[14px] tabular-nums transition-colors duration-500 md:pt-3 ${on ? 'text-ink' : 'text-muted'}`}
                     >
                       {s.n}
                     </span>

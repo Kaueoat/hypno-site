@@ -113,7 +113,7 @@ export function Nav() {
               </li>
             ))}
           </ul>
-          <LiquidButton href={whatsappLink()} target="_blank" rel="noopener" variant="neon" className="self-start">
+          <LiquidButton href={whatsappLink()} target="_blank" rel="noopener" variant="chrome" className="self-start">
             Fale com a Hypno
             <ArrowUpRight size={18} aria-hidden="true" />
           </LiquidButton>

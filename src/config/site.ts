@@ -71,6 +71,38 @@ export const sites = {
       text: 'Interfaces que ficam na memória.',
     },
   ],
+  /**
+   * Aba "Projetos": sites que a HYPNO já publicou.
+   * Para adicionar um site:
+   *   1. grave a tela do site rolando no desktop (ou peça ao Claude) → public/portfolio/sites/<nome>.mp4
+   *      e um quadro dele como capa → public/portfolio/sites/<nome>.jpg
+   *   2. copie um bloco abaixo e troque título, cliente, link, vídeo e capa.
+   * Itens com `soon: true` aparecem como "Em breve" (sem link).
+   */
+  projects: [
+    {
+      title: 'HYPNO',
+      client: 'Site institucional',
+      year: '2026',
+      href: '', // TODO: colocar o link publicado (ex.: https://hypno.vercel.app)
+      domain: 'hypno.com.br',
+      video: 'portfolio/sites/hypno.mp4',
+      poster: 'portfolio/sites/hypno.jpg',
+    },
+    { title: 'Próximo projeto', client: 'Em produção', year: '', href: '', domain: 'seunegocio.com.br', soon: true },
+    { title: 'Próximo projeto', client: 'Em produção', year: '', href: '', domain: 'suamarca.com', soon: true },
+  ] as SiteProject[],
+}
+
+export type SiteProject = {
+  title: string
+  client: string
+  year: string
+  href: string
+  domain: string
+  video?: string
+  poster?: string
+  soon?: boolean
 }
 
 export const audiovisual = {

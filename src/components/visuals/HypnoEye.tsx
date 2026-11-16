@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, type CSSProperties, type Ref } from 'react'
 import { useReducedMotion } from '../../hooks/motion'
+import { ChromeEye, type ChromeEyeHandle } from './chrome/ChromeEye'
 
 /**
  * Símbolo oficial da HYPNO, vivo.
@@ -100,26 +101,18 @@ export function EyeArt({ uid, holeRef, pupilRef, lidRef, bandRefs, animated }: A
 }
 
 export function HypnoEye({ className = '', entrance = true }: { className?: string; entrance?: boolean }) {
-  const uid = 'eye' + useId().replace(/[^a-zA-Z0-9]/g, '')
   const wrapRef = useRef<HTMLDivElement>(null)
-  const glowRef = useRef<SVGSVGElement>(null)
-  const holeRef = useRef<SVGCircleElement>(null)
-  const pupilRef = useRef<SVGCircleElement>(null)
-  const lidRef = useRef<SVGPathElement>(null)
-  const bandRefs = useRef<(SVGUseElement | null)[]>([])
+  const eye = useRef<ChromeEyeHandle | null>(null)
   const reduced = useReducedMotion()
 
   useEffect(() => {
     const wrap = wrapRef.current
-    const hole = holeRef.current
-    const pupil = pupilRef.current
-    const lid = lidRef.current
-    const glow = glowRef.current
-    if (!wrap || !hole || !pupil || !lid) return
+    if (!wrap) return
 
     const target = { x: 0, y: 0 }
     const cur = { x: 0, y: 0 }
     const glitch = [0, 0, 0, 0]
+    const bands = [0, 0, 0, 0]
     let wobbleStart = -1
     let raf = 0
     let visible = true
@@ -128,7 +121,7 @@ export function HypnoEye({ className = '', entrance = true }: { className?: stri
     const t0 = performance.now()
     const timers: number[] = []
 
-    /* ---------- íris ---------- */
+    /* ---------- íris + reflexo ---------- */
     const aimAt = (px: number, py: number) => {
       const r = wrap.getBoundingClientRect()
       const cx = r.left + r.width * ((110 + 24) / 248)
@@ -149,19 +142,14 @@ export function HypnoEye({ className = '', entrance = true }: { className?: stri
         x /= m
         y /= m
       }
-      const ox = x * MAX_X
-      const oy = y * MAX_Y
-      hole.setAttribute('cx', (IRIS.cx + ox).toFixed(2))
-      hole.setAttribute('cy', (IRIS.cy + oy).toFixed(2))
-      pupil.setAttribute('cx', (PUPIL.cx + ox).toFixed(2))
-      pupil.setAttribute('cy', (PUPIL.cy + oy).toFixed(2))
+      // o reflexo do cromo gira junto com o olhar
+      eye.current?.set({ iris: [x * MAX_X, y * MAX_Y], tilt: [x, y] })
     }
 
     /* ---------- faixas (glitch + hover) ---------- */
     const applyBands = (now: number) => {
       let wobbling = false
-      bandRefs.current.forEach((el, i) => {
-        if (!el) return
+      for (let i = 0; i < 4; i++) {
         let w = 0
         if (wobbleStart >= 0) {
           const t = (now - wobbleStart) / 1000
@@ -170,8 +158,9 @@ export function HypnoEye({ className = '', entrance = true }: { className?: stri
             w = 5 * Math.sin(t * 26 + i * 1.4) * Math.exp(-t * 4.5) * (i % 2 ? -1 : 1)
           }
         }
-        el.setAttribute('transform', `translate(${(BANDS[i][2] + glitch[i] + w).toFixed(2)} 0)`)
-      })
+        bands[i] = glitch[i] + w
+      }
+      eye.current?.set({ bands: bands as [number, number, number, number] })
       if (!wobbling) wobbleStart = -1
       return wobbling
     }
@@ -230,11 +219,7 @@ export function HypnoEye({ className = '', entrance = true }: { className?: stri
       const k = Math.max(0, 1 - e)
       if (Math.abs(k - lastK) < 0.002) return
       lastK = k
-      lid.setAttribute('d', lidPath(k))
-      if (glow) {
-        glow.style.transform = `scaleY(${(0.15 + 0.85 * k).toFixed(3)})`
-        glow.style.opacity = String(0.5 * k)
-      }
+      eye.current?.set({ lid: k })
     }
     let scrollRaf = 0
     const onScroll = () => {
@@ -303,27 +288,39 @@ export function HypnoEye({ className = '', entrance = true }: { className?: stri
   }, [reduced])
 
   return (
-    <div ref={wrapRef} data-hero-eye className={`hero-eye relative ${className}`} style={{ aspectRatio: '248 / 152' }}>
-      {/* Glow oficial: cópia desfocada atrás da forma nítida (fecha junto com o olho) */}
-      <svg
-        ref={glowRef}
-        aria-hidden="true"
-        viewBox={VIEWBOX}
-        className={`${entrance ? 'eye-glow ' : ''}absolute inset-0 h-full w-full`}
-        style={{ fill: 'var(--color-neon)', filter: 'blur(clamp(14px, 3.2vw, 40px))', opacity: 0.5, transformOrigin: '50% 80%' }}
-      >
-        <EyeArt uid={`${uid}g`} />
-      </svg>
-      <svg
-        role="img"
-        aria-label="Símbolo da HYPNO: um olho que acompanha o cursor"
-        viewBox={VIEWBOX}
-        className="relative h-full w-full"
-        style={{ fill: 'var(--color-neon)' }}
-      >
-        <EyeArt uid={uid} holeRef={holeRef} pupilRef={pupilRef} lidRef={lidRef} bandRefs={bandRefs} animated={entrance} />
-      </svg>
+    <div
+      ref={wrapRef}
+      data-hero-eye
+      className={`hero-eye relative ${entrance ? 'eye-enter ' : ''}${className}`}
+      style={{ aspectRatio: '248 / 152' }}
+    >
+      <ChromeEye
+        handle={eye}
+        label="Símbolo da HYPNO em cromo: um olho que acompanha o cursor"
+        fallback={<SilverSymbol className="h-full w-full" />}
+      />
     </div>
+  )
+}
+
+/** Versão vetorial prata (sem WebGL, favicon, usos estáticos). */
+export function SilverSymbol({ className = '', viewBox = VIEWBOX }: { className?: string; viewBox?: string }) {
+  const uid = 'slv' + useId().replace(/[^a-zA-Z0-9]/g, '')
+  return (
+    <svg aria-hidden="true" viewBox={viewBox} className={className}>
+      <defs>
+        <linearGradient id={`${uid}-g`} x1="0" y1="40" x2="0" y2="160" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#ffffff" />
+          <stop offset="0.42" stopColor="#c9cbd1" />
+          <stop offset="0.5" stopColor="#5d6068" />
+          <stop offset="0.62" stopColor="#e9eaee" />
+          <stop offset="1" stopColor="#8a8d96" />
+        </linearGradient>
+      </defs>
+      <g fill={`url(#${uid}-g)`}>
+        <EyeArt uid={uid} />
+      </g>
+    </svg>
   )
 }
 

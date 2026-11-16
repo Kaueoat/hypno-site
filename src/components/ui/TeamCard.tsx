@@ -12,7 +12,7 @@ export function TeamCard({ member, fallbackHref }: { member: TeamMember; fallbac
       href={href}
       target="_blank"
       rel="noopener"
-      className="group relative isolate flex flex-col gap-5 rounded-[28px] p-3 pb-6 outline-none transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:scale-[1.015] focus-visible:ring-2 focus-visible:ring-neon focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+      className="group relative isolate flex flex-col gap-5 rounded-[28px] p-3 pb-6 outline-none transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:scale-[1.015] focus-visible:ring-2 focus-visible:ring-chrome focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
       aria-label={`${member.name} — abrir perfil`}
     >
       <LiquidLayers radius="rounded-[28px]" />
@@ -43,7 +43,7 @@ export function TeamCard({ member, fallbackHref }: { member: TeamMember; fallbac
         <ArrowUpRight
           size={20}
           aria-hidden="true"
-          className="mt-1 shrink-0 text-muted transition-[transform,color] duration-500 group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-neon"
+          className="mt-1 shrink-0 text-muted transition-[transform,color] duration-500 group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-ink"
         />
       </div>
     </a>

@@ -80,7 +80,7 @@ export function AudiovisualSection() {
             </div>
             <div className="absolute inset-0 grid place-items-center">
               <span
-                className="grid h-20 w-20 place-items-center rounded-full bg-neon text-bg sm:h-24 sm:w-24"
+                className="grid h-20 w-20 place-items-center rounded-full chrome-bg text-bg sm:h-24 sm:w-24"
                 style={{ boxShadow: 'var(--glow-md)' }}
                 aria-hidden="true"
               >
